@@ -1,20 +1,69 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Rick and Morty</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <!-- 🔍 Buscador -->
+  <div *ngIf="!selectedCharacter">
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      placeholder="Buscar personaje..."
+      (ionInput)="searchCharacters()">
+    </ion-searchbar>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <!-- ⏳ Cargando -->
+    <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+
+    <!-- ⚠️ Error -->
+    <p *ngIf="error">{{ error }}</p>
+
+    <!-- 📋 Lista de personajes -->
+    <ion-list>
+      <ion-item *ngFor="let character of characters" (click)="viewDetails(character)">
+        <ion-avatar slot="start">
+          <img [src]="character.image" alt="{{ character.name }}" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ character.name }}</h2>
+          <p>{{ character.species }} - {{ character.status }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- 🧾 Detalles del personaje -->
+  <div *ngIf="selectedCharacter">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ selectedCharacter.name }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <img [src]="selectedCharacter.image" alt="{{ selectedCharacter.name }}" />
+        <p><strong>Especie:</strong> {{ selectedCharacter.species }}</p>
+        <p><strong>Estado:</strong> {{ selectedCharacter.status }}</p>
+        <p><strong>Género:</strong> {{ selectedCharacter.gender }}</p>
+        <p><strong>Origen:</strong> {{ selectedCharacter.origin.name }}</p>
+        <p><strong>Ubicación:</strong> {{ selectedCharacter.location.name }}</p>
+
+        <!-- ✍️ Comentario -->
+        <ion-textarea
+          [(ngModel)]="comment"
+          placeholder="Escribe un comentario...">
+        </ion-textarea>
+
+        <!-- 💾 Botón para guardar -->
+        <ion-button expand="block" (click)="saveCharacterToFirebase()">
+          Guardar en Firebase
+        </ion-button>
+
+        <!-- ⬅️ Volver -->
+        <ion-button expand="block" color="medium" (click)="goBack()">
+          Volver
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>
